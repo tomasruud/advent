@@ -19,9 +19,10 @@ func main() {
 		panic(err)
 	}
 
-	defer func () {
-		err := file.Close()
-		panic(err)
+	defer func() {
+		if err := file.Close(); err != nil {
+			panic(err)
+		}
 	}()
 
 	scanner := bufio.NewScanner(file)
