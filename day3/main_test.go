@@ -17,9 +17,7 @@ var input = []string{
 }
 
 func Test_tobogganMap_hasTreeAt(t1 *testing.T) {
-	type fields struct {
-		lines []string
-	}
+	type fields []string
 	type args struct {
 		x int
 		y int
@@ -31,17 +29,15 @@ func Test_tobogganMap_hasTreeAt(t1 *testing.T) {
 		want    bool
 		wantErr bool
 	}{
-		{"finds tree", fields{input}, args{3, 0}, true, false},
-		{"notices when out of range", fields{input}, args{3, 200}, false, true},
-		{"finds not tree", fields{input}, args{2, 2}, false, false},
-		{"finds tree out of x bounds", fields{input}, args{15, 5}, true, false},
+		{"finds tree", input, args{3, 0}, true, false},
+		{"notices when out of range", input, args{3, 200}, false, true},
+		{"finds not tree", input, args{2, 2}, false, false},
+		{"finds tree out of x bounds", input, args{15, 5}, true, false},
 	}
 
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := tobogganMap{
-				lines: tt.fields.lines,
-			}
+			t := tobogganMap(tt.fields)
 			got, err := t.hasTreeAt(tt.args.x, tt.args.y)
 			if (err != nil) != tt.wantErr {
 				t1.Errorf("hasTreeAt() error = %v, wantErr %v", err, tt.wantErr)
@@ -55,9 +51,7 @@ func Test_tobogganMap_hasTreeAt(t1 *testing.T) {
 }
 
 func Test_tobogganMap_countTreesInPath(t1 *testing.T) {
-	type fields struct {
-		lines []string
-	}
+	type fields []string
 	type args struct {
 		xStep int
 		yStep int
@@ -68,13 +62,11 @@ func Test_tobogganMap_countTreesInPath(t1 *testing.T) {
 		args   args
 		want   int
 	}{
-		{"counts proper", fields{input}, args{3, 1}, 7},
+		{"counts proper", input, args{3, 1}, 7},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := tobogganMap{
-				lines: tt.fields.lines,
-			}
+			t := tobogganMap(tt.fields)
 			if got := t.countTreesInPath(tt.args.xStep, tt.args.yStep); got != tt.want {
 				t1.Errorf("countTreesInPath() = %v, want %v", got, tt.want)
 			}
