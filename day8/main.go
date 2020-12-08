@@ -38,8 +38,7 @@ func main() {
 
 	pgm := parse(input)
 
-	acc, _ := pgm.run()
-	fmt.Println(acc)
+	fmt.Println(pgm.run())
 	fmt.Println(pgm.runWithSelfHeal())
 }
 
@@ -103,7 +102,7 @@ func (p program) run() (int, error) {
 	}
 }
 
-func (p program) runWithSelfHeal() int {
+func (p program) runWithSelfHeal() (int, error) {
 	cp := make(program, len(p))
 	copy(cp, p)
 
@@ -125,8 +124,8 @@ func (p program) runWithSelfHeal() int {
 			continue
 		}
 
-		return acc
+		return acc, nil
 	}
 
-	return -1
+	return -1, errors.New("unable to self heal")
 }
