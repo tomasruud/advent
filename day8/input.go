@@ -1,4 +1,16 @@
-acc +42
+package main
+
+const example = `nop +0
+acc +1
+jmp +4
+acc +3
+jmp -3
+acc -99
+acc +1
+jmp -4
+acc +6`
+
+const input = `acc +42
 acc -12
 nop +112
 acc +47
@@ -680,4 +692,4 @@ acc +45
 acc +23
 acc +13
 acc +19
-jmp +1
+jmp +1`

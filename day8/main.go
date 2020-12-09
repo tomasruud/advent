@@ -1,52 +1,25 @@
 package main
 
 import (
-	"bufio"
 	"errors"
-	"flag"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	var input []string
-
-	file, err := os.Open(*file)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
 	pgm := parse(input)
 
 	fmt.Println(pgm.run())
 	fmt.Println(pgm.runWithSelfHeal())
 }
 
-func parse(in []string) program {
+func parse(in string) program {
 	ins := regexp.MustCompile(`^(acc|nop|jmp) ([+-]\d+)$`)
 
 	p := program{}
-	for _, i := range in {
+	for _, i := range strings.Split(in, "\n") {
 		m := ins.FindStringSubmatch(i)
 
 		if len(m) != 3 {

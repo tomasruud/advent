@@ -5,28 +5,16 @@ import (
 	"testing"
 )
 
-var sample = []string{
-	"nop +0",
-	"acc +1",
-	"jmp +4",
-	"acc +3",
-	"jmp -3",
-	"acc -99",
-	"acc +1",
-	"jmp -4",
-	"acc +6",
-}
-
 func Test_parse(t *testing.T) {
 	type args struct {
-		in []string
+		in string
 	}
 	tests := []struct {
 		name string
 		args args
 		want program
 	}{
-		{"parses", args{sample}, program{
+		{"parses", args{example}, program{
 			{"nop", 0},
 			{"acc", 1},
 			{"jmp", 4},
@@ -54,7 +42,7 @@ func Test_program_run(t *testing.T) {
 		want    int
 		wantErr bool
 	}{
-		{"runs properly", parse(sample), 5, true},
+		{"runs properly", parse(example), 5, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -70,18 +58,24 @@ func Test_program_run(t *testing.T) {
 	}
 }
 
-func Test_program_runWithSelfHeal(t *testing.T) {
+func Test_program_runWithSelfHeal1(t *testing.T) {
 	tests := []struct {
-		name string
-		p    program
-		want int
+		name    string
+		p       program
+		want    int
+		wantErr bool
 	}{
-		{"heals properly", parse(sample), 8},
+		{"heals properly", parse(example), 8, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.runWithSelfHeal(); got != tt.want {
-				t.Errorf("runWithSelfHeal() = %v, want %v", got, tt.want)
+			got, err := tt.p.runWithSelfHeal()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("runWithSelfHeal() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("runWithSelfHeal() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
