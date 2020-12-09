@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 )
@@ -87,7 +86,7 @@ func (x xmas) weak() int {
 	var end int
 	var v1 int
 	var v2 int
-	inv := x.invalid();
+	inv := x.invalid()
 
 	for sta, v1 = range x.list {
 		if inv == v1 {
@@ -112,8 +111,7 @@ func (x xmas) weak() int {
 		}
 	}
 
-	min := math.MaxInt32
-	max := 0
+	min, max := x.list[sta], x.list[sta]
 
 	for _, v := range x.list[sta : sta+end+1] {
 		if v < min {
