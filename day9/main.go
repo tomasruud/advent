@@ -1,48 +1,21 @@
 package main
 
 import (
-	"bufio"
-	"flag"
 	"fmt"
-	"os"
 	"strconv"
+	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	var input []string
-
-	file, err := os.Open(*file)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
 	x := parse(input, 25)
 	fmt.Println(x.invalid())
 	fmt.Println(x.weak())
 }
 
-func parse(in []string, pre int) xmas {
+func parse(in string, pre int) xmas {
 	x := xmas{pre: pre}
 
-	for _, i := range in {
+	for _, i := range strings.Split(in, "\n") {
 		v, _ := strconv.Atoi(i)
 		x.list = append(x.list, v)
 	}
