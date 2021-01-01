@@ -1,53 +1,27 @@
 package main
 
 import (
-	"bufio"
-	"flag"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	var input []string
-
-	file, err := os.Open(*file)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
 	bs := parse(input)
+
 	fmt.Println(bs.contains("shiny gold"))
 	fmt.Println(bs.find("shiny gold").size())
 }
 
-func parse(in []string) bags {
+func parse(in string) bags {
 	bs := make(map[kind]*bag)
 	roots := make(map[kind]*bag)
 
 	rf := regexp.MustCompile(`^([a-z]+ [a-z]+) bags contain`)
 	rs := regexp.MustCompile(`(\d+) ([a-z]+ [a-z]+) bags?`)
 
-	for _, line := range in {
+	for _, line := range strings.Split(in, "\n") {
 		k := kind(rf.FindStringSubmatch(line)[1])
 		if _, exist := bs[k]; !exist {
 			bs[k] = newBag(k)

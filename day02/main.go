@@ -1,87 +1,54 @@
 package main
 
 import (
-	"bufio"
-	"flag"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	var input []pw
+	ps := parse(input)
 
-	file, err := os.Open(*file)
+	fmt.Println(ps.valid())
+	fmt.Println(ps.validAtToboggan())
+}
 
-	if err != nil {
-		panic(err)
-	}
+func parse(in string) list {
+	r := regexp.MustCompile(`(?P<min>\d+)-(?P<max>\d+) (?P<char>[A-Za-z]): (?P<pass>[A-Za-z]+)`)
 
-	defer file.Close()
+	var ps list
+	for _, l := range strings.Split(in, "\n") {
+		match := r.FindStringSubmatch(l)
 
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		p, err := parseEntry(scanner.Text())
-
-		if err != nil {
-			panic(err)
+		sub := make(map[string]string)
+		for i, name := range r.SubexpNames() {
+			if i != 0 && name != "" && i < len(match) {
+				sub[name] = match[i]
+			}
 		}
 
-		input = append(input, p)
+		min, _ := strconv.Atoi(sub["min"])
+		max, _ := strconv.Atoi(sub["max"])
+
+		ps = append(ps, pw{
+			min:  min,
+			max:  max,
+			char: sub["char"],
+			pass: sub["pass"],
+		})
 	}
 
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	d := day2{input}
-
-	fmt.Println(d.task1())
-	fmt.Println(d.task2())
+	return ps
 }
+
+type list []pw
 
 type pw struct {
 	min  int
 	max  int
 	char string
 	pass string
-}
-
-func parseEntry(e string) (pw, error) {
-	r := regexp.MustCompile(`(?P<min>\d+)-(?P<max>\d+) (?P<char>[A-Za-z]): (?P<pass>[A-Za-z]+)`)
-
-	match := r.FindStringSubmatch(e)
-	sub := make(map[string]string)
-	for i, name := range r.SubexpNames() {
-		if i != 0 && name != "" && i < len(match) {
-			sub[name] = match[i]
-		}
-	}
-
-	min, err := strconv.Atoi(sub["min"])
-
-	if err != nil {
-		return pw{}, err
-	}
-
-	max, err := strconv.Atoi(sub["max"])
-
-	if err != nil {
-		return pw{}, err
-	}
-
-	return pw{
-		min:  min,
-		max:  max,
-		char: sub["char"],
-		pass: sub["pass"],
-	}, nil
 }
 
 func (p pw) valid() bool {
@@ -112,30 +79,22 @@ func (p pw) validAtToboggan() bool {
 	return matched
 }
 
-type day2 struct {
-	input []pw
-}
-
-// task1 returns number of passwords valid
-func (d day2) task1() int {
-	tot := 0
-	for _, p := range d.input {
+func (ps list) valid() int {
+	n := 0
+	for _, p := range ps {
 		if p.valid() {
-			tot++
+			n++
 		}
 	}
-
-	return tot
+	return n
 }
 
-// task2 returns number of passwords valid at Toboggan
-func (d day2) task2() int {
-	tot := 0
-	for _, p := range d.input {
+func (ps list) validAtToboggan() int {
+	n := 0
+	for _, p := range ps {
 		if p.validAtToboggan() {
-			tot++
+			n++
 		}
 	}
-
-	return tot
+	return n
 }

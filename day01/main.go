@@ -1,93 +1,60 @@
 package main
 
 import (
-	"bufio"
 	"errors"
-	"flag"
 	"fmt"
-	"os"
 	"strconv"
+	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	var input []int
+	r := parse(input)
 
-	file, err := os.Open(*file)
+	fmt.Println(r.double(2020))
+	fmt.Println(r.triple(2020))
+}
 
-	if err != nil {
-		panic(err)
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		num, err := strconv.Atoi(scanner.Text())
+func parse(in string) report {
+	var r report
+	for _, l := range strings.Split(in, "\n") {
+		a, err := strconv.Atoi(l)
 
 		if err != nil {
-			panic(err)
+			continue
 		}
 
-		input = append(input, num)
+		r = append(r, a)
 	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	d := day1{
-		input:  input,
-		target: 2020,
-	}
-
-	fmt.Println(d.task1())
-	fmt.Println(d.task2())
+	return r
 }
 
-type day1 struct {
-	input  []int
-	target int
-}
+type report []int
 
-func (d day1) task1() (int, error) {
-	for i, a := range d.input {
-		anums := remove(d.input, i)
-		for _, b := range anums {
-			if a+b == d.target {
+func (r report) double(v int) (int, error) {
+	for i := 0; i < len(r); i++ {
+		a := r[i]
+		for _, b := range r[i+1:] {
+			if a+b == v {
 				return a * b, nil
 			}
 		}
 	}
 
-	return -1, errors.New("no matching numbers found")
+	return -1, errors.New("no integers found")
 }
 
-func (d day1) task2() (int, error) {
-	for i, a := range d.input {
-		anums := remove(d.input, i)
-
-		for j, b := range anums {
-			bnums := remove(anums, j)
-
-			for _, c := range bnums {
-				if a+b+c == d.target {
+func (r report) triple(v int) (int, error) {
+	for i := 0; i < len(r); i++ {
+		a := r[i]
+		for j := i + 1; j < len(r); j++ {
+			b := r[j]
+			for _, c := range r[j+1:] {
+				if a+b+c == v {
 					return a * b * c, nil
 				}
 			}
 		}
 	}
 
-	return -1, errors.New("no matching numbers found")
-}
-
-func remove(s []int, i int) []int {
-	c := make([]int, len(s))
-	copy(c, s)
-
-	c[i] = c[len(c)-1]
-	return c[:len(c)-1]
+	return -1, errors.New("no integers found")
 }

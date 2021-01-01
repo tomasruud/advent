@@ -5,30 +5,25 @@ import (
 	"testing"
 )
 
-func Test_parseEntry(t *testing.T) {
+func Test_parse(t *testing.T) {
 	type args struct {
-		e string
+		in string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    pw
-		wantErr bool
+		name string
+		args args
+		want list
 	}{
-		{"creates from valid", args{e: "1-3 a: abcde"}, pw{1, 3, "a", "abcde"}, false},
-		{"creates from valid", args{e: "1-3 b: cdefg"}, pw{1, 3, "b", "cdefg"}, false},
-		{"creates from valid", args{e: "12-19 c: ccccccccc"}, pw{12, 19, "c", "ccccccccc"}, false},
-		{"invalid gives err", args{e: "gdfgewqr323"}, pw{}, true},
+		{"parses", args{example}, list{
+			{1, 3, "a", "abcde"},
+			{1, 3, "b", "cdefg"},
+			{2, 9, "c", "ccccccccc"},
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseEntry(tt.args.e)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("parseEntry() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("parseEntry() got = %v, want %v", got, tt.want)
+			if got := parse(tt.args.in); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("parse() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -90,6 +85,40 @@ func Test_pw_validAtToboggan(t *testing.T) {
 				pass: tt.fields.pass,
 			}
 			if got := p.validAtToboggan(); got != tt.want {
+				t.Errorf("validAtToboggan() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_list_valid(t *testing.T) {
+	tests := []struct {
+		name string
+		ps   list
+		want int
+	}{
+		{"counts valid", parse(example), 2},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.ps.valid(); got != tt.want {
+				t.Errorf("valid() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_list_validAtToboggan(t *testing.T) {
+	tests := []struct {
+		name string
+		ps   list
+		want int
+	}{
+		{"counts valid", parse(example), 1},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.ps.validAtToboggan(); got != tt.want {
 				t.Errorf("validAtToboggan() = %v, want %v", got, tt.want)
 			}
 		})

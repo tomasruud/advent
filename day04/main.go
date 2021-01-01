@@ -1,44 +1,62 @@
 package main
 
 import (
-	"bufio"
-	"flag"
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	var input []string
-
-	file, err := os.Open(*file)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
 	pc := parse(input)
 
 	fmt.Println(pc.validCount())
 	fmt.Println(pc.strictValidCount())
+}
+
+func parse(in string) collection {
+	pc := collection{}
+	p := passport{}
+
+	r := regexp.MustCompile(`([a-z]{3}):([A-Za-z0-9#]+)`)
+
+	for _, d := range strings.Split(in, "\n") {
+		if len(d) < 1 {
+			pc = append(pc, p)
+			p = passport{}
+			continue
+		}
+
+		m := r.FindAllStringSubmatch(d, -1)
+
+		for _, md := range m {
+			if len(md) != 3 {
+				continue
+			}
+
+			k, v := md[1], md[2]
+
+			switch k {
+			case "byr":
+				p.byr = v
+			case "iyr":
+				p.iyr = v
+			case "eyr":
+				p.eyr = v
+			case "hgt":
+				p.hgt = v
+			case "hcl":
+				p.hcl = v
+			case "ecl":
+				p.ecl = v
+			case "pid":
+				p.pid = v
+			case "cid":
+				p.cid = v
+			}
+		}
+	}
+
+	return append(pc, p) // make sure last is appended
 }
 
 type collection []passport
@@ -107,50 +125,4 @@ func (p passport) valid() bool {
 		len(p.hcl) > 0 &&
 		len(p.ecl) > 0 &&
 		len(p.pid) > 0
-}
-
-func parse(input []string) collection {
-	pc := collection{}
-	p := passport{}
-
-	r := regexp.MustCompile(`([a-z]{3}):([A-Za-z0-9#]+)`)
-
-	for _, d := range input {
-		if len(d) < 1 {
-			pc = append(pc, p)
-			p = passport{}
-			continue
-		}
-
-		m := r.FindAllStringSubmatch(d, -1)
-
-		for _, md := range m {
-			if len(md) != 3 {
-				continue
-			}
-
-			k, v := md[1], md[2]
-
-			switch k {
-			case "byr":
-				p.byr = v
-			case "iyr":
-				p.iyr = v
-			case "eyr":
-				p.eyr = v
-			case "hgt":
-				p.hgt = v
-			case "hcl":
-				p.hcl = v
-			case "ecl":
-				p.ecl = v
-			case "pid":
-				p.pid = v
-			case "cid":
-				p.cid = v
-			}
-		}
-	}
-
-	return append(pc, p) // make sure last is appended
 }

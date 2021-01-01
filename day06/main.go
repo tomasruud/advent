@@ -1,47 +1,21 @@
 package main
 
 import (
-	"bufio"
-	"flag"
 	"fmt"
-	"os"
+	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	var input []string
-
-	file, err := os.Open(*file)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
 	f := parse(input)
+
 	fmt.Println(f.uniqueSum())
 	fmt.Println(f.allSum())
 }
 
-func parse(i []string) flight {
+func parse(in string) flight {
 	f := flight{}
 	g := group{}
-	for _, line := range i {
+	for _, line := range strings.Split(in, "\n") {
 		if line == "" {
 			f = append(f, g)
 			g = group{}

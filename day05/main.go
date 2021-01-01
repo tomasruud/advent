@@ -1,44 +1,29 @@
 package main
 
 import (
-	"bufio"
-	"flag"
 	"fmt"
-	"os"
+	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
+	fl := parse(input)
+
+	fmt.Println(fl.maxSeatID())
+	fmt.Println(fl.maxAvailableSeatID())
+}
+
+func parse(in string) flight {
 	fl := flight{
 		plane:  plane{8, 128},
 		passes: []boardingPass{},
 	}
 
-	file, err := os.Open(*file)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		p := boardingPass{scanner.Text(), fl.plane}
+	for _, l := range strings.Split(in, "\n") {
+		p := boardingPass{l}
 		fl.passes = append(fl.passes, p)
 	}
 
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	fmt.Println(fl.maxSeatID())
-	fmt.Println(fl.maxAvailableSeatID())
+	return fl
 }
 
 type flight struct {
@@ -49,8 +34,8 @@ type flight struct {
 func (f flight) maxSeatID() int {
 	var hi int
 	for _, b := range f.passes {
-		if b.seatID() > hi {
-			hi = b.seatID()
+		if f.plane.seatID(b) > hi {
+			hi = f.plane.seatID(b)
 		}
 	}
 	return hi
@@ -68,12 +53,11 @@ func (f flight) maxAvailableSeatID() int {
 
 func (f flight) availableSeatIDs() []int {
 	var av []int
-
 	for id := seatID(1, 0); id < f.maxSeatID(); id++ {
 		taken := false
 
 		for _, b := range f.passes {
-			if b.seatID() == id {
+			if f.plane.seatID(b) == id {
 				taken = true
 			}
 		}
@@ -82,7 +66,6 @@ func (f flight) availableSeatIDs() []int {
 			av = append(av, id)
 		}
 	}
-
 	return av
 }
 
@@ -92,24 +75,23 @@ type plane struct {
 }
 
 type boardingPass struct {
-	seatCode string
-	plane    plane
+	seat string
 }
 
 func seatID(row int, col int) int {
 	return (row * 8) + col
 }
 
-func (b boardingPass) seatID() int {
-	return seatID(b.row(), b.col())
+func (p plane) seatID(b boardingPass) int {
+	return seatID(p.row(b), p.col(b))
 }
 
-func (b boardingPass) row() int {
-	return locate(b.seatCode[:7], "B", 0, b.plane.rows-1)
+func (p plane) row(b boardingPass) int {
+	return locate(b.seat[:7], "B", 0, p.rows-1)
 }
 
-func (b boardingPass) col() int {
-	return locate(b.seatCode[7:], "R", 0, b.plane.cols-1)
+func (p plane) col(b boardingPass) int {
+	return locate(b.seat[7:], "R", 0, p.cols-1)
 }
 
 func locate(code string, sig string, lo int, hi int) int {

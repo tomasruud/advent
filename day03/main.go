@@ -1,38 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"errors"
-	"flag"
 	"fmt"
-	"os"
+	"strings"
 )
 
-var file = flag.String("file", "input.txt", "input file")
-
 func main() {
-	flag.Parse()
-	m := tobogganMap{}
-
-	file, err := os.Open(*file)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		m = append(m, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
+	m := parse(input)
 
 	fmt.Println(m.countTreesInPath(3, 1))
 
@@ -43,6 +18,10 @@ func main() {
 			m.countTreesInPath(7, 1) *
 			m.countTreesInPath(1, 2),
 	)
+}
+
+func parse(in string) tobogganMap {
+	return strings.Split(in, "\n")
 }
 
 type tobogganMap []string

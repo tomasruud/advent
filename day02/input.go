@@ -1,4 +1,10 @@
-2-5 z: zzztvz
+package main
+
+const example = `1-3 a: abcde
+1-3 b: cdefg
+2-9 c: ccccccccc`
+
+const input = `2-5 z: zzztvz
 2-8 d: pddzddkdvqgxndd
 4-14 r: rrrjrrrrrrbrrccrr
 2-7 r: zrgsnrr
@@ -997,4 +1003,4 @@
 9-15 s: ssssssssnsssssss
 1-11 t: tfvtqvlbtld
 4-5 k: kkkczkkkvkkk
-2-7 p: ptphppvppppp
+2-7 p: ptphppvppppp`

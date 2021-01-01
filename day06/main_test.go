@@ -5,34 +5,16 @@ import (
 	"testing"
 )
 
-var sample = []string{
-	"abc",
-	"",
-	"a",
-	"b",
-	"c",
-	"",
-	"ab",
-	"ac",
-	"",
-	"a",
-	"a",
-	"a",
-	"a",
-	"",
-	"b",
-}
-
 func Test_parse(t *testing.T) {
 	type args struct {
-		i []string
+		in string
 	}
 	tests := []struct {
 		name string
 		args args
 		want flight
 	}{
-		{"parses properly", args{sample}, flight{
+		{"parses properly", args{example}, flight{
 			group{form{"a", "b", "c"}},
 			group{form{"a"}, form{"b"}, form{"c"}},
 			group{form{"a", "b"}, form{"a", "c"}},
@@ -42,7 +24,7 @@ func Test_parse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := parse(tt.args.i); !reflect.DeepEqual(got, tt.want) {
+			if got := parse(tt.args.in); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("parse() = %v, want %v", got, tt.want)
 			}
 		})
@@ -55,11 +37,11 @@ func Test_group_unique(t *testing.T) {
 		g    group
 		want int
 	}{
-		{"counts properly", parse(sample)[0], 3},
-		{"counts properly", parse(sample)[1], 3},
-		{"counts properly", parse(sample)[2], 3},
-		{"counts properly", parse(sample)[3], 1},
-		{"counts properly", parse(sample)[4], 1},
+		{"counts properly", parse(example)[0], 3},
+		{"counts properly", parse(example)[1], 3},
+		{"counts properly", parse(example)[2], 3},
+		{"counts properly", parse(example)[3], 1},
+		{"counts properly", parse(example)[4], 1},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -76,7 +58,7 @@ func Test_flight_uniqueSum(t *testing.T) {
 		f    flight
 		want int
 	}{
-		{"counts properly", parse(sample), 11},
+		{"counts properly", parse(example), 11},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -93,11 +75,11 @@ func Test_group_all(t *testing.T) {
 		g    group
 		want int
 	}{
-		{"counts properly", parse(sample)[0], 3},
-		{"counts properly", parse(sample)[1], 0},
-		{"counts properly", parse(sample)[2], 1},
-		{"counts properly", parse(sample)[3], 1},
-		{"counts properly", parse(sample)[4], 1},
+		{"counts properly", parse(example)[0], 3},
+		{"counts properly", parse(example)[1], 0},
+		{"counts properly", parse(example)[2], 1},
+		{"counts properly", parse(example)[3], 1},
+		{"counts properly", parse(example)[4], 1},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -114,7 +96,7 @@ func Test_flight_allSum(t *testing.T) {
 		f    flight
 		want int
 	}{
-		{"counts properly", parse(sample), 6},
+		{"counts properly", parse(example), 6},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

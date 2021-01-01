@@ -1,4 +1,22 @@
-onitvpuwxqczlmkabsjrgedfy
+package main
+
+const example = `abc
+
+a
+b
+c
+
+ab
+ac
+
+a
+a
+a
+a
+
+b`
+
+const input = `onitvpuwxqczlmkabsjrgedfy
 epdjqbxlnimfaowtzgsyku
 pejglyqnwuaodzsbmfxikt
 ojkpytdhignxuqebzlwsfma
@@ -2116,4 +2134,4 @@ udxaqicmvtnbgef
 ranvgxdpe
 ngvpde
 epnxvgr
-ywepngvu
+ywepngvu`
