@@ -102,5 +102,8 @@ func Test_group_badge(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, item('r'), fixture.badge())
+	got, err := fixture.badge()
+
+	assert.NoError(t, err)
+	assert.Equal(t, item('r'), got)
 }
