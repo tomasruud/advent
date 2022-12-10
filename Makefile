@@ -2,7 +2,7 @@ test:
 	go test ./...
 
 run:
-	go run github.com/tomasruud/advent/2022/day$(day)
+	go run github.com/tomasruud/advent/day$(day)
 
 gen:
 	mkdir day$(day) && \

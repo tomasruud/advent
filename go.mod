@@ -1,4 +1,4 @@
-module github.com/tomasruud/advent/2022
+module github.com/tomasruud/advent
 
 go 1.19
 
