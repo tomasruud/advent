@@ -38,11 +38,29 @@ func Test(t *testing.T) {
 	t.Run("it parses input", func(t *testing.T) {
 		got, err := parse(inputFixture)
 
-		want := monkeys{
-			{worries: []int{79, 98}, b: p(19), op: "*", mod: 23, yes: 2, no: 3},
-			{worries: []int{54, 65, 75, 74}, b: p(6), op: "+", mod: 19, yes: 2, no: 0},
-			{worries: []int{79, 60, 97}, op: "*", mod: 13, yes: 1, no: 3},
-			{worries: []int{74}, b: p(3), op: "+", mod: 17, yes: 0, no: 1},
+		want := game{
+			monkeys: []*monkey{
+				{
+					items:     []item{79, 98},
+					operation: multiply{b: p(item(19))},
+					test:      test{mod: 23, yes: 2, no: 3},
+				},
+				{
+					items:     []item{54, 65, 75, 74},
+					operation: add{b: p(item(6))},
+					test:      test{mod: 19, yes: 2, no: 0},
+				},
+				{
+					items:     []item{79, 60, 97},
+					operation: multiply{},
+					test:      test{mod: 13, yes: 1, no: 3},
+				},
+				{
+					items:     []item{74},
+					operation: add{b: p(item(3))},
+					test:      test{mod: 17, yes: 0, no: 1},
+				},
+			},
 		}
 
 		assert.NoError(t, err)
@@ -50,54 +68,45 @@ func Test(t *testing.T) {
 	})
 
 	t.Run("it works with relief factor 3", func(t *testing.T) {
-		f, _ := parse(inputFixture)
-
-		f.rounds(20, 3)
-
-		assert.Equal(t, 10605, f.monkeyBusiness())
+		g, _ := parse(inputFixture)
+		assert.Equal(t, 10605, g.withRelief(3).doRounds(20).monkeyBusiness())
 	})
 
 	t.Run("it works with relief factor 1", func(t *testing.T) {
-		f, _ := parse(inputFixture)
-
-		f.rounds(10000, 1)
-
-		assert.Equal(t, 2713310158, f.monkeyBusiness())
+		g, _ := parse(inputFixture)
+		assert.Equal(t, 2713310158, g.doRounds(10000).monkeyBusiness())
 	})
 
 	t.Run("it works for 1000 rounds with relief 1", func(t *testing.T) {
-		f, _ := parse(inputFixture)
-
-		f.rounds(1000, 1)
+		g, _ := parse(inputFixture)
+		g.doRounds(1000)
 
 		want := []int{5204, 4792, 199, 5192}
 
 		for i, w := range want {
-			assert.Equal(t, w, f[i].inspected)
+			assert.Equal(t, w, g.monkeys[i].inspected)
 		}
 	})
 
 	t.Run("it works for 3000 rounds with relief 1", func(t *testing.T) {
-		f, _ := parse(inputFixture)
-
-		f.rounds(3000, 1)
+		g, _ := parse(inputFixture)
+		g.doRounds(3000)
 
 		want := []int{15638, 14358, 587, 15593}
 
 		for i, w := range want {
-			assert.Equal(t, w, f[i].inspected)
+			assert.Equal(t, w, g.monkeys[i].inspected)
 		}
 	})
 
 	t.Run("it works for 6000 rounds with relief 1", func(t *testing.T) {
-		f, _ := parse(inputFixture)
-
-		f.rounds(6000, 1)
+		g, _ := parse(inputFixture)
+		g.doRounds(6000)
 
 		want := []int{31294, 28702, 1165, 31204}
 
 		for i, w := range want {
-			assert.Equal(t, w, f[i].inspected)
+			assert.Equal(t, w, g.monkeys[i].inspected)
 		}
 	})
 }
