@@ -27,11 +27,12 @@
 (defn is-safe [report]
   (and
     (or (< ;report) (> ;report))
-    (reduce2
+    (reduce
       (fn [acc n]
         (and
           acc
           (< 0 (math/abs (- (get report n) (get report (+ n 1)))) 4)))
+      true
       (range 0 (- (length report) 1)))))
 
 (test (is-safe [7 6 4 2 1]) true)
