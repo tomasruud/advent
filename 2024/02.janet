@@ -31,7 +31,7 @@
       (fn [acc n]
         (and
           acc
-          (< 0 (math/abs (- (get report n) (get report (+ n 1)))) 4)))
+          (< 0 (math/abs (- (report n) (report (+ n 1)))) 4)))
       true
       (range 0 (- (length report) 1)))))
 
